@@ -1,0 +1,5 @@
+[build]
+builder = "NIXPACKS"
+
+[phases.setup]
+nixPkgs = ["glib", "nss", "atk", "atk-bridge", "cups", "drm", "dbus", "expat", "xcb-util", "xkbcommon", "pango", "cairo", "libxkbcommon", "libxshmfence", "libgbm"]
