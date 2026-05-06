@@ -1,5 +1,5 @@
 const { Client } = require("whatsapp-web.js")
-
+const qrcode = require("qrcode-terminal")
 const QRCode = require('qrcode')
 const fs = require("fs")
 
