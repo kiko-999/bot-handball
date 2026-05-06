@@ -1,5 +1,5 @@
 const { Client } = require("whatsapp-web.js")
-const qrcode = require("qrcode-terminal")
+
 const QRCode = require('qrcode')
 const fs = require("fs")
 
@@ -13,8 +13,8 @@ const client = new Client({
 })
 
 let data = {
-    masculino: {},
-    femenino: {}
+    m: {},
+    f: {}
 }
 
 // cargar datos si existen
