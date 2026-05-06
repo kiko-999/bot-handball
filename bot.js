@@ -27,13 +27,13 @@ function guardar() {
 }
 
 client.on("qr", (qr) => {
-    console.log("📱 Escaneá el QR:")
+    console.log("Escaneá el QR:")
     console.log("QR:", qr)
     qrcode.generate(qr, { small: true })
 })
 
 client.on("ready", () => {
-    console.log("✅ Bot listo 24/7")
+    console.log("✅ Bot listo")
 })
 
 client.on("message", async (msg) => {
@@ -63,7 +63,7 @@ client.on("message", async (msg) => {
             if (!data[equipo][partido]) return
             data[equipo][partido].push(nombre)
             guardar()
-            msg.reply(`+ ${nombre} agregado al partido contra ${partido}`)
+            msg.reply(`+ ${nombre} juega el partido contra ${partido}`)
             break
 
         case "sacar":
