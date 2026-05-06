@@ -1,5 +1,6 @@
 const { Client } = require("whatsapp-web.js")
 const qrcode = require("qrcode-terminal")
+const QRCode = require('qrcode')
 const fs = require("fs")
 
 const client = new Client({
@@ -26,10 +27,14 @@ function guardar() {
     fs.writeFileSync("data.json", JSON.stringify(data, null, 2))
 }
 
-client.on("qr", (qr) => {
-    console.log("📱 Escaneá el QR:")
-    console.log("QR:", qr)
+
+
+client.on('qr', async (qr) => {
+  await QRCode.toFile('qr.png', qr)
+  console.log('QR guardado como qr.png')
+  qrcode.generate(qr, { small: true })
 })
+
 
 client.on("ready", () => {
     console.log("✅ Bot listo 24/7")
