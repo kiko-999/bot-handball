@@ -28,8 +28,7 @@ function guardar() {
 
 client.on("qr", (qr) => {
     console.log("📱 Escaneá el QR:")
-    console.log("QR:", (qr) => {
-  qrcode.generate(qr, { small: false })
+    console.log("QR:", qr)
 })
 
 client.on("ready", () => {
