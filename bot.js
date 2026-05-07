@@ -74,7 +74,7 @@ client.on("message", async (msg) => {
 
             guardar()
 
-            msg.reply(`✅ Partido ${partido} creado`)
+            msg.reply(`Partido contra ${partido} creado`)
             break
         }
 
@@ -93,14 +93,14 @@ client.on("message", async (msg) => {
             }
 
             if (data[equipo][partido].includes(jugador)) {
-                return msg.reply("⚠️ Ya está agregado")
+                return msg.reply("gil ese ya está agregado")
             }
 
             data[equipo][partido].push(jugador)
 
             guardar()
 
-            msg.reply(`✅ ${jugador} agregado`)
+            msg.reply(`${jugador} agregado`)
             break
         }
 
@@ -158,17 +158,17 @@ client.on("message", async (msg) => {
                 return msg.reply("Partido inexistente")
             }
 
-            const jugadores =
-                data[equipo][partido]
+            const jugadores = data[equipo][partido]
 
-            msg.reply(
-                `🏆 ${partido.toUpperCase()} (${equipo})\n\n` +
-                (
-                    jugadores.join("\n") ||
-                    "Sin jugadores"
-                )
-            )
+            const listaNumerada =
+                jugadores.map((j, i) => `${i + 1}. ${j}`).join("\n")
 
+        msg.reply(`🏆 ${partido.toUpperCase()} (${equipo})\n\n` +
+    (
+        listaNumerada ||
+        "Sin jugadores"
+    )
+)
             break
         }
 
@@ -179,7 +179,7 @@ client.on("message", async (msg) => {
                 Object.keys(data[equipo])
 
             msg.reply(
-                ` Partidos ${equipo}\n\n` +
+                `Partidos ${equipo}\n\n` +
                 (
                     partidos.join("\n") ||
                     "Sin partidos"
@@ -195,19 +195,19 @@ client.on("message", async (msg) => {
             const partido = args[3]
 
             if (!data[equipo][partido]) {
-                return msg.reply(" Partido inexistente")
+                return msg.reply("Partido inexistente")
             }
 
             delete data[equipo][partido]
 
             guardar()
 
-            msg.reply(` Partido eliminado`)
+            msg.reply(`Partido eliminado`)
             break
         }
 
         default:
-            msg.reply(" Comando inválido")
+            msg.reply("Comando inválido")
     }
 })
 
