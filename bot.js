@@ -1,8 +1,10 @@
-const { Client } = require("whatsapp-web.js")
+const { Client, LocalAuth } = require("whatsapp-web.js")
 const qrcode = require("qrcode-terminal")
 const fs = require("fs")
 
 const client = new Client({
+    authStrategy: new LocalAuth(),
+
     puppeteer: {
         args: [
             "--no-sandbox",
@@ -34,7 +36,7 @@ client.on("qr", (qr) => {
 
 // listo
 client.on("ready", () => {
-    console.log("✅ Bot listo")
+    console.log("✅ BOT LISTO")
 })
 
 // mensajes
@@ -42,104 +44,170 @@ client.on("message", async (msg) => {
 
     const texto = msg.body.toLowerCase()
 
-    // prefijo
-    if (!texto.startsWith("x")) return
+    if (!texto.startsWith("x ")) return
 
     const args = texto.split(" ")
 
-    const comando = args[1]
+    const cmd = args[1]
     const equipo = args[2]
-    const partido = args[3]
-    const nombre = args.slice(4).join(" ")
 
-    // validar equipo
-    if (!data[equipo]) {
-        return msg.reply("❌ Equipo inválido. Usá m o f")
+    if (!["m", "f"].includes(equipo)) {
+        return msg.reply("Equipo inválido (m/f)")
     }
 
-    switch (comando) {
+    switch (cmd) {
 
         // crear partido
-        case "p":
+        case "p": {
+
+            const partido = args[3]
 
             if (!partido) {
-                return msg.reply("❌ Falta nombre del partido")
+                return msg.reply("Falta nombre del partido")
+            }
+
+            if (data[equipo][partido]) {
+                return msg.reply("⚠️ Ese partido ya existe")
             }
 
             data[equipo][partido] = []
 
             guardar()
 
-            msg.reply(`✅ Partido ${partido} creado en ${equipo}`)
+            msg.reply(`✅ Partido ${partido} creado`)
             break
+        }
 
         // agregar jugador
-        case "j":
+        case "j": {
+
+            const partido = args[3]
+            const jugador = args.slice(4).join(" ")
 
             if (!data[equipo][partido]) {
-                return msg.reply("❌ Ese partido no existe")
+                return msg.reply("Partido inexistente")
             }
 
-            if (!nombre) {
-                return msg.reply("❌ Falta nombre")
+            if (!jugador) {
+                return msg.reply("Falta jugador")
             }
 
-            data[equipo][partido].push(nombre)
+            if (data[equipo][partido].includes(jugador)) {
+                return msg.reply("⚠️ Ya está agregado")
+            }
+
+            data[equipo][partido].push(jugador)
 
             guardar()
 
-            msg.reply(`✅ ${nombre} agregado a ${partido}`)
+            msg.reply(`✅ ${jugador} agregado`)
             break
+        }
 
         // sacar jugador
-        case "sacar":
+        case "s": {
+
+            const partido = args[3]
+            const jugador = args.slice(4).join(" ")
 
             if (!data[equipo][partido]) {
-                return msg.reply("❌ Ese partido no existe")
+                return msg.reply("Partido inexistente")
             }
 
             data[equipo][partido] =
-                data[equipo][partido].filter(p => p !== nombre)
+                data[equipo][partido].filter(j => j !== jugador)
 
             guardar()
 
-            msg.reply(`❌ ${nombre} eliminado de ${partido}`)
+            msg.reply(`${jugador} eliminado`)
             break
+        }
 
-        // mostrar lista
-        case "lista":
+        // cambiar jugador
+        case "c": {
+
+            const partido = args[3]
+            const viejo = args[4]
+            const nuevo = args.slice(5).join(" ")
 
             if (!data[equipo][partido]) {
-                return msg.reply("❌ Ese partido no existe")
+                return msg.reply("Partido inexistente")
             }
 
+            const index =
+                data[equipo][partido].indexOf(viejo)
+
+            if (index === -1) {
+                return msg.reply("Jugador no encontrado")
+            }
+
+            data[equipo][partido][index] = nuevo
+
+            guardar()
+
+            msg.reply(`✅ ${viejo} → ${nuevo}`)
+            break
+        }
+
+        // lista
+        case "l": {
+
+            const partido = args[3]
+
+            if (!data[equipo][partido]) {
+                return msg.reply("Partido inexistente")
+            }
+
+            const jugadores =
+                data[equipo][partido]
+
             msg.reply(
-                `📋 Lista ${equipo} vs ${partido}\n\n` +
+                `🏆 ${partido.toUpperCase()} (${equipo})\n\n` +
                 (
-                    data[equipo][partido].join("\n") ||
+                    jugadores.join("\n") ||
                     "Sin jugadores"
                 )
             )
 
             break
+        }
 
-        // ver partidos
-        case "partidos":
+        // partidos
+        case "ps": {
 
-            const lista = Object.keys(data[equipo])
+            const partidos =
+                Object.keys(data[equipo])
 
             msg.reply(
-                `🏆 Partidos en ${equipo}\n\n` +
+                ` Partidos ${equipo}\n\n` +
                 (
-                    lista.join("\n") ||
+                    partidos.join("\n") ||
                     "Sin partidos"
                 )
             )
 
             break
+        }
+
+        // borrar partido
+        case "b": {
+
+            const partido = args[3]
+
+            if (!data[equipo][partido]) {
+                return msg.reply(" Partido inexistente")
+            }
+
+            delete data[equipo][partido]
+
+            guardar()
+
+            msg.reply(` Partido eliminado`)
+            break
+        }
 
         default:
-            msg.reply("❌ Comando no reconocido")
+            msg.reply(" Comando inválido")
     }
 })
 
